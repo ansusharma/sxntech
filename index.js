@@ -10,7 +10,17 @@ import usersRoute from "./routes/users.js";
 // Setup Express App
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Access-Control-Allow-Origin", "Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+    credentials: true
+  };
+  
+  app.options('*', cors(corsOptions));
+  app.use(cors(corsOptions));
 
 // Middlewares
 app.use(express.json({ limit: "30mb", extended: true }));
