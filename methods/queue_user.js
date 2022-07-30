@@ -32,8 +32,8 @@ export const pair_user= async(userid,topic)=>{
             console.log("1 document deleted");
         });
 
-        // const token = getAccessToken(roomName);
-        const token = "dummyToken_88v8rr8";
+        const token = getAccessToken(roomName);
+        // const token = "dummyToken_88v8rr8";
 
         const user_pair = new UserPair({
             commonTopic:topic,
