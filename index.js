@@ -10,14 +10,6 @@ import usersRoute from "./routes/users.js";
 // Setup Express App
 const app = express();
 
-app.use(
-    cors({
-        credentials: true,
-        origin: true
-    })
-);
-app.options('*', cors());
-
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -25,6 +17,11 @@ app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
+
+// Middlewares
+app.use(express.json({ limit: "30mb", extended: true }));
+app.use(express.urlencoded({ limit: "30mb", extended: true }));
+
 
 // Connect to the database
 const URI = process.env.MONGODB_URI;
