@@ -11,9 +11,8 @@ export const hashPassword = async (password) => {
 };
 
 // Check if password is correct
-export const comparePassword = async (password, userPassword) => {
-    const isMatch = await bcrypt.compare(password, userPassword);
-
+export const compareOtp = async (otp, userotp) => {
+    const isMatch = await bcrypt.compare(otp, userotp);
     return isMatch;
 };
 
@@ -39,12 +38,13 @@ export const authorizedRoutes = async (req, res, next) => {
             const user = await User.findById({ _id: verifyToken.id });
 
             if (user) {
-                req.user = user._id;
-            } else {
+                req.userid = user._id;
+            } 
+            else {
                 return res.status(404).json({
                     // User deleted account and token is still valid
-                    message:
-                        "No user found",
+                    message:"No user found",
+                    success:false
                 });
             }
 
@@ -53,9 +53,26 @@ export const authorizedRoutes = async (req, res, next) => {
         } else {
             res.status(401).json({
                 message: "You are not authorized to access this page.",
+                success:false
             });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message ,success:false});
     }
+};
+
+
+export const tokenValidity = async (req, res) => {
+
+    if(req.userid){
+        return res.status(200).json({
+            success:true,
+            message:"Token is Valid"
+        });
+    }
+
+    return res.status(200).json({
+        success:false,
+        message:"Token not Valid"
+    });
 };

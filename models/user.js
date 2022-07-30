@@ -7,27 +7,18 @@ const UserSchema = new mongoose.Schema({
         unique: true,
         required: true,
     },
-    password: {
-        type: String,
-        minlength: 6,
-        required: true,
-    },
     name: {
         type: String,
         required: true,
     },
-    phone_no: {
+    otp: {
         type: String,
-        required: true,
+        required: false,
     },
-    address: {
-        type: String,
-        required: true,
-    },
-    date: {
+    otpExpiry: {
         type: Date,
-        default: Date.now,
-    },
+        required: false,
+    }
 });
 
 const User = mongoose.model("users", UserSchema);

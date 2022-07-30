@@ -1,47 +1,48 @@
 import User from "../models/user.js";
-import { errorMessage, validateRegisterForm } from "../validations/users.js";
-import { hashPassword } from "../auth/auth.js";
+import {send_otp} from  "../methods/send_otp.js";
+import {hashPassword} from "../auth/auth.js";
 
-// Handle user registration
-export const registerUser = (req, res) => {
-    const user = req.body;
-
+export const registerUser = async(req, res) => {
     try {
-        // Validate the registration form
-        validateRegisterForm(user)
-            .then((response) => {
-                // If response is true, hash the password
-                if (response) {
-                    hashPassword(user.password)
-                        .then(async (hash) => {
-                            const { email ,name ,phone_no,address} = user;
-                            const newUser = new User({
-                                email,
-                                name,
-                                phone_no,
-                                address,
-                                password: hash,
-                            });
-
-                            // Save the user
-                            const savedUser = await newUser.save();
-                            res.status(201).json(savedUser);
-                        })
-                        .catch((error) => {
-                            res.status(500).json({ message: error.message });
-                        });
-                }
-                // But if response is false, show the error message
-                else {
-                    res.status(400).json({
-                        message: errorMessage(),
-                    });
-                }
+        const { email, name } = req.body;
+        if (!name || !email ) {
+            res.status(400).json({ success:false, message: "Both name and email field required" });
+            return;
+        }
+        var thisuser = await User.findOne({ email: email });
+        if (!thisuser) {
+            const user = new User({
+                email,
+                name,
+            });
+            thisuser = await user.save();
+        }
+        const unhashedotp= (Math.floor(1000 + Math.random() * 9000)).toString();
+        hashPassword(unhashedotp)
+            .then(async (hash)=>{
+                thisuser.otp = hash;
+                var minutesToAdd = 10;
+                const currentDate = new Date();
+                thisuser.otpExpiry = new Date(currentDate.getTime() + minutesToAdd*60000);
+                thisuser.save();
+                send_otp(thisuser.name,thisuser.email,unhashedotp).then(async (otpres)=>{
+                    if(!otpres.error){
+                        res.status(200).json({ success:true, message: "user is registered, kindly login with otp now" });
+                        return;
+                    }
+                    else{
+                        res.status(500).json({ success:false, message: "Cannot send otp" });
+                        return;
+                    }
+                });
             })
             .catch((error) => {
-                res.status(500).json({ message: error.message });
+                res.status(500).json({ success:false, message: error.message });
+                return;
             });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    }
+    catch (error) {
+        res.status(500).json({ success:false, message: error.message });
+        return;
     }
 };
