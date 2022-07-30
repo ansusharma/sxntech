@@ -1,14 +1,21 @@
 import User from "../models/user.js";
-import {send_otp} from  "../methods/send_otp.js";
-import {hashPassword} from "../auth/auth.js";
+import { send_otp } from "../methods/send_otp.js";
+import { hashPassword } from "../auth/auth.js";
 
-export const registerUser = async(req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { email, name } = req.body;
-        if (!name || !email ) {
-            res.status(400).json({ success:false, message: "Both name and email field required" });
+        if (!name || !email) {
+            res.status(200).json({ success: false, message: "Both name and email field required" });
             return;
         }
+
+        const regex_pattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!(regex_pattern.test(email))) {
+            res.status(200).json({ success: false, message: "Provide a valid email address" });
+            return;
+        }
+
         var thisuser = await User.findOne({ email: email });
         if (!thisuser) {
             const user = new User({
@@ -17,32 +24,32 @@ export const registerUser = async(req, res) => {
             });
             thisuser = await user.save();
         }
-        const unhashedotp= (Math.floor(1000 + Math.random() * 9000)).toString();
+        const unhashedotp = (Math.floor(1000 + Math.random() * 9000)).toString();
         hashPassword(unhashedotp)
-            .then(async (hash)=>{
+            .then(async (hash) => {
                 thisuser.otp = hash;
                 var minutesToAdd = 10;
                 const currentDate = new Date();
-                thisuser.otpExpiry = new Date(currentDate.getTime() + minutesToAdd*60000);
+                thisuser.otpExpiry = new Date(currentDate.getTime() + minutesToAdd * 60000);
                 thisuser.save();
-                send_otp(thisuser.name,thisuser.email,unhashedotp).then(async (otpres)=>{
-                    if(!otpres.error){
-                        res.status(200).json({ success:true, message: "user is registered, kindly login with otp now" });
+                send_otp(thisuser.name, thisuser.email, unhashedotp).then(async (otpres) => {
+                    if (!otpres.error) {
+                        res.status(200).json({ success: true, message: "user is registered, kindly login with otp now" });
                         return;
                     }
-                    else{
-                        res.status(500).json({ success:false, message: "Cannot send otp" });
+                    else {
+                        res.status(500).json({ success: false, message: "Cannot send otp" });
                         return;
                     }
                 });
             })
             .catch((error) => {
-                res.status(500).json({ success:false, message: error.message });
+                res.status(500).json({ success: false, message: error.message });
                 return;
             });
     }
     catch (error) {
-        res.status(500).json({ success:false, message: error.message });
+        res.status(500).json({ success: false, message: error.message });
         return;
     }
 };
