@@ -1,5 +1,8 @@
 # funegle backend
 
+## This is a backend server for the live video streaming app between two random people
+## Check for front end and demo at https://github.com/samanghous/funegleFrontend
+
 ## Base url live deployment https://backend-o487.onrender.com
 
 ## Install dependencies
