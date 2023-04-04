@@ -1,12 +1,12 @@
-import User from "../models/user.js";
-import { send_otp } from "../methods/send_otp.js";
-import { hashPassword } from "../auth/auth.js";
+import userSchema from "../models/userSchema.js";
+// import { send_otp } from "../methods/send_otp.js";
+// import { hashPassword } from "../auth/auth.js";
 
-export const registerUser = async (req, res) => {
+export const signUp = async (req, res) => {
     try {
-        const { email, name } = req.body;
-        if (!name || !email) {
-            res.status(200).json({ success: false, message: "Both name and email field required" });
+        var { email, firstname , lastname ,mobileno ,usertype } = req.body;
+        if (!email || !firstname || !lastname || !mobileno) {
+            res.status(200).json({ success: false, message: "All fields are manadatory" });
             return;
         }
 
@@ -15,15 +15,26 @@ export const registerUser = async (req, res) => {
             res.status(200).json({ success: false, message: "Provide a valid email address" });
             return;
         }
-
-        var thisuser = await User.findOne({ email: email });
+        if(!usertype){
+            usertype=0;
+        }
+        var thisuser = await userSchema.findOne({ email: email });
         if (!thisuser) {
-            const user = new User({
-                email,
-                name,
+            const user = new userSchema({
+                email, 
+                firstname , 
+                lastname ,
+                mobileno ,
+                usertype 
             });
             thisuser = await user.save();
+            res.status(200).json({ success: true, message: "user registered" });
         }
+        else{
+            res.status(400).json({ success: false, message: "user already registered" });
+        }
+
+        /*
         const unhashedotp = (Math.floor(1000 + Math.random() * 9000)).toString();
         hashPassword(unhashedotp)
             .then(async (hash) => {
@@ -47,6 +58,7 @@ export const registerUser = async (req, res) => {
                 res.status(500).json({ success: false, message: error.message });
                 return;
             });
+            */
     }
     catch (error) {
         res.status(500).json({ success: false, message: error.message });
