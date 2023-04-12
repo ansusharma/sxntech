@@ -17,7 +17,7 @@ export const createProduct= async(req,res)=>{
     await product.save();
     res.status(201).json({
         sucess:true,
-        message:" object saved"
+        message:" object is saved"
     })
     return;
 }
