@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+//import User from "../models/users.js";
 
 // Hash the user password before saving to the database
 export const hashPassword = async (password) => {
@@ -16,6 +16,7 @@ export const compareOtp = async (otp, userotp) => {
     return isMatch;
 };
 
+/*
 // Protect private routes from unauthorized users
 export const authorizedRoutes = async (req, res, next) => {
     // Check if user is authenticated
@@ -76,3 +77,5 @@ export const tokenValidity = async (req, res) => {
         message:"Token not Valid"
     });
 };
+
+*/

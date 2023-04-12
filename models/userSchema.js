@@ -24,12 +24,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       require: true,
       default:0
-    }
+    },
+    hashed_password :{
+      type: String,
+      require :true,
+    },
 } ,
   { timestamps: true }
 );
-
-
 
 
 const User = mongoose.model("users", UserSchema);

@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Load routes
-import usersRoute from "./routes/users.js";
+import apiRoute from "./routes/apiroute.js";
 
 // Setup Express App
 const app = express();
@@ -59,7 +59,7 @@ mongoose
     .catch((error) => console.log(error.message));
 
 // Use routes
-app.use("/api", usersRoute);
+app.use("/api", apiRoute);
 
 // Port
 const PORT = process.env.PORT || 5000;
