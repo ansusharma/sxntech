@@ -7,7 +7,9 @@ export const loginUser = async (req, res) => {
     const userInfo = req.body;
 
     try {
+        console.log("*");
         const user = await User.findOne({ email: userInfo.email });
+        console.log("**");
         if (!user) {
             res.status(404).json({
                 success:false,
@@ -21,7 +23,7 @@ export const loginUser = async (req, res) => {
             return;
         }
         
-        compareOtp(userInfo.password, user.password)
+        compareOtp(password, user.hashed_password)
         .then((response) => {
             if (response) {
 
@@ -39,7 +41,6 @@ export const loginUser = async (req, res) => {
             }
         })
 
-        
        
 
         

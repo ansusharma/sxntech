@@ -20,8 +20,10 @@ export const signUp = async (req, res) => {
         }
         var thisuser = await userSchema.findOne({ email: email });
         if (!thisuser) {
+            console.log(password);
             hashPassword(password)
                 .then(async (hashed_password) => {
+                    console.log(hashed_password);
                     const user = new userSchema({
                         email, 
                         firstname , 
@@ -29,11 +31,10 @@ export const signUp = async (req, res) => {
                         mobileno ,
                         usertype,
                         hashed_password
-        
                     });
                     thisuser = await user.save();
+                    console.log(thisuser);
                     res.status(200).json({ success: true, message: "user registered" });
-                    
                 })
                 .catch((error) => {
                     res.status(500).json({ success: false, message: error.message });
