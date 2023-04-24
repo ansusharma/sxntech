@@ -5,7 +5,6 @@ import { compareOtp } from "../auth/auth.js";
 // Handle user login
 export const loginUser = async (req, res) => {
     const userInfo = req.body;
-
     try {
         console.log("*");
         const user = await User.findOne({ email: userInfo.email });
